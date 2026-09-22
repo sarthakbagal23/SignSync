@@ -3,8 +3,8 @@
 // loads from a CDN — that is the entire offline claim. Verify in airplane mode.
 import { FilesetResolver, HandLandmarker } from "@mediapipe/tasks-vision";
 
-const WASM_DIR = "/mediapipe/wasm";
-const MODEL_PATH = "/models/hand_landmarker.task";
+const WASM_DIR = `${import.meta.env.BASE_URL}mediapipe/wasm`;
+const MODEL_PATH = `${import.meta.env.BASE_URL}models/hand_landmarker.task`;
 
 async function create(delegate) {
   const vision = await FilesetResolver.forVisionTasks(WASM_DIR);
