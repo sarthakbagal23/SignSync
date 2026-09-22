@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SignSync — ASL Fingerspelling Coach</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Sign<span>Sync</span></h1>
+      <p id="fps">— fps</p>
+    </header>
+    <main>
+      <div class="pane">
+        <!-- Mirror the whole wrapper, not the video alone: video and overlay
+             flip together, so the skeleton can never drift off the hand. -->
+        <div id="mirror">
+          <video id="video" playsinline muted></video>
+          <canvas id="overlay"></canvas>
+        </div>
+        <p id="status" role="status">Requesting camera…</p>
+      </div>
+    </main>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

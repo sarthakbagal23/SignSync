@@ -1,0 +1,85 @@
+:root {
+  --bg: #0f1115;
+  --fg: #e8eaf0;
+  --accent: #4da3ff;
+  --dim: #8a91a0;
+  --error: #ff7a7a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: system-ui, sans-serif;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 16px 24px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 1.4rem;
+  letter-spacing: 0.02em;
+}
+
+h1 span {
+  color: var(--accent);
+}
+
+#fps {
+  margin: 0;
+  color: var(--dim);
+  font-variant-numeric: tabular-nums;
+}
+
+main {
+  display: grid;
+  place-items: center;
+  padding: 0 24px 24px;
+}
+
+.pane {
+  width: min(960px, 100%);
+}
+
+#mirror {
+  position: relative;
+  transform: scaleX(-1); /* camera preview mirrored for the signer */
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+}
+
+#mirror video,
+#mirror canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Canvas overlays the video; internal resolution is set from the video's
+   actual pixel size (see overlay.js), so points map 1:1 at any window size. */
+#mirror canvas {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+}
+
+#status {
+  text-align: center;
+  color: var(--dim);
+  min-height: 1.5em;
+  margin: 12px 0 0;
+}
+
+#status.error {
+  color: var(--error);
+}
