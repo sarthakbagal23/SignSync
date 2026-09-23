@@ -1,14 +1,25 @@
-// Phase 0 wiring: camera → landmarker → skeleton overlay, driven once per
-// decoded video frame (not per animation frame — rVFC never double-runs or
-// skips a frame, and feeds detectForVideo its monotonic timestamp).
+// Camera → landmarker → skeleton overlay → geometry → live feature inspector,
+// driven once per decoded video frame (rVFC never double-runs or skips a
+// frame, and feeds detectForVideo its monotonic timestamp).
 import { startCamera } from "./vision/camera.js";
 import { createLandmarker } from "./vision/landmarker.js";
 import { drawOverlay, sizeCanvasToVideo } from "./ui/overlay.js";
+import {
+  canonicalHand,
+  buildHandFrame,
+  FrameSmoother,
+} from "./geometry/normalize.js";
+import { computeFeatures } from "./geometry/features.js";
+import { createDebugPanel } from "./ui/debug.js";
 
 const video = document.getElementById("video");
 const canvas = document.getElementById("overlay");
 const statusEl = document.getElementById("status");
 const fpsEl = document.getElementById("fps");
+const debugPanel = createDebugPanel(document.getElementById("debug"));
+
+// §4.2: smooth the palm-frame basis across frames, then re-orthonormalize.
+const smoother = new FrameSmoother(0.4);
 
 function setStatus(msg, isError = false) {
   statusEl.textContent = msg;
@@ -22,6 +33,27 @@ let lastTimestamp = 0;
 let fpsEMA = 0;
 let lastFrameAt = 0;
 
+function updateInspector(result) {
+  const world = result?.worldLandmarks?.[0];
+  if (!world) {
+    smoother.reset(); // re-seed on reappearance — no stale blending
+    debugPanel.update(null, null, null);
+    return;
+  }
+
+  // Geometry uses worldLandmarks only (§2 gotcha #1: image landmarks are
+  // aspect-distorted).
+  const raw = world.map((p) => [p.x, p.y, p.z]);
+  const label = result.handednesses?.[0]?.[0]?.categoryName ?? null;
+  const hand = canonicalHand(raw, label);
+
+  const rawFrame = buildHandFrame(hand);
+  const basis = smoother.smooth(rawFrame.uWorld, rawFrame.wWorld);
+  const frame = buildHandFrame(hand, basis);
+
+  debugPanel.update(frame, computeFeatures(frame), { label });
+}
+
 function onFrame(now) {
   // detectForVideo demands a strictly increasing timestamp; performance.now()
   // is monotonic but this guard makes "strictly" guaranteed at any frame rate.
@@ -32,6 +64,7 @@ function onFrame(now) {
 
   sizeCanvasToVideo(canvas, video);
   const handVisible = drawOverlay(canvas, result);
+  updateInspector(result);
 
   // Rolling FPS (EMA smooths single-frame spikes).
   if (lastFrameAt > 0) {

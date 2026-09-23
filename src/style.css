@@ -42,8 +42,17 @@ h1 span {
 
 main {
   display: grid;
-  place-items: center;
+  grid-template-columns: minmax(0, 960px) 300px;
+  align-items: start;
+  justify-content: center;
+  gap: 16px;
   padding: 0 24px 24px;
+}
+
+@media (max-width: 1100px) {
+  main {
+    grid-template-columns: minmax(0, 100%);
+  }
 }
 
 .pane {
@@ -82,4 +91,55 @@ main {
 
 #status.error {
   color: var(--error);
+}
+
+/* Live feature inspector (Phase 1): dense, monospace, readable at a glance
+   while a hand is moving in front of the camera. */
+#debug {
+  background: #161922;
+  border: 1px solid #232735;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-size: 0.78rem;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+}
+
+#debug h2 {
+  margin: 0 0 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+#debug details {
+  margin-bottom: 10px;
+}
+
+#debug summary {
+  cursor: pointer;
+  color: var(--dim);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.68rem;
+  margin-bottom: 4px;
+}
+
+#debug table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#debug th {
+  text-align: left;
+  font-weight: 400;
+  color: var(--dim);
+  padding: 1px 8px 1px 0;
+  white-space: nowrap;
+}
+
+#debug td {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
