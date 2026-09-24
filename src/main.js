@@ -7,11 +7,14 @@ import { createLandmarker } from "./vision/landmarker.js";
 import { drawOverlay, sizeCanvasToVideo } from "./ui/overlay.js";
 import { createPipeline } from "./geometry/pipeline.js";
 import { createDebugPanel } from "./ui/debug.js";
+import { classify } from "./recognition/classifier.js";
+import { ALPHABET } from "./recognition/letters/index.js";
 
 const video = document.getElementById("video");
 const canvas = document.getElementById("overlay");
 const statusEl = document.getElementById("status");
 const fpsEl = document.getElementById("fps");
+const readingEl = document.getElementById("reading");
 const debugPanel = createDebugPanel(document.getElementById("debug"));
 
 const pipeline = createPipeline(0.4);
@@ -27,6 +30,33 @@ let landmarker;
 let lastTimestamp = 0;
 let fpsEMA = 0;
 let lastFrameAt = 0;
+let readingSig = "|"; // last rendered (class|text) for the reading element
+let readingRenderedAt = 0;
+
+function updateReading(verdict, now) {
+  let text = "—";
+  let cls = "";
+  const b = verdict?.best;
+  if (b) {
+    if (verdict.ambiguous) {
+      text = `between ${verdict.ambiguity.a} and ${verdict.ambiguity.b}…`;
+      cls = "ambiguous";
+    } else if (b.accepted) {
+      text = `${b.letter} (${b.score.toFixed(2)})`;
+      cls = "good";
+    } else {
+      text = `— (closest: ${b.letter}, ${b.score.toFixed(2)})`;
+    }
+  }
+  const sig = `${cls}|${text}`;
+  // Instant on change, at most every 500ms otherwise (score digits would
+  // strobe at video framerate).
+  if (sig === readingSig && now - readingRenderedAt < 500) return;
+  readingEl.textContent = `Reading: ${text}`;
+  readingEl.className = cls;
+  readingSig = sig;
+  readingRenderedAt = now;
+}
 
 function onFrame(now) {
   // detectForVideo demands a strictly increasing timestamp; performance.now()
@@ -53,6 +83,13 @@ function onFrame(now) {
 
   debugPanel.update(out?.frame ?? null, out?.features ?? null, { label });
 
+  // Live recognition readout (Phase 3 end-to-end validation). The full
+  // coaching UI arrives later (§12); for now this is how we sanity-check
+  // the engine against real hands. DOM writes are signature-gated: instant
+  // when the verdict changes, score digits refresh at most 2×/second.
+  const verdict = out ? classify(ALPHABET, out.features) : null;
+  updateReading(verdict, now);
+
   // Rolling FPS (EMA smooths single-frame spikes).
   if (lastFrameAt > 0) {
     fpsEMA = fpsEMA ? fpsEMA * 0.9 + (1000 / (now - lastFrameAt)) * 0.1 : 1000 / (now - lastFrameAt);
@@ -62,7 +99,7 @@ function onFrame(now) {
 
   setStatus(handVisible ? "Hand detected" : "Show your hand to the camera");
 
-  // ponytail: rVFC only — no rAF fallback; Chrome/Edge/modern Safari all ship it
+  // note: rVFC only — no rAF fallback; Chrome/Edge/modern Safari all ship it
   video.requestVideoFrameCallback(onFrame);
 }
 

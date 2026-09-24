@@ -108,6 +108,27 @@ main {
   color: var(--error);
 }
 
+/* Live letter reading (Phase 3): the end-to-end validation surface — the
+   real coaching UI arrives in a later phase. */
+#reading {
+  text-align: center;
+  margin: 8px 0 0;
+  min-height: 1.6em;
+  color: var(--dim);
+  font-size: 1.15rem;
+  font-variant-numeric: tabular-nums;
+}
+
+#reading.good {
+  color: #2fd66f;
+  font-weight: 700;
+  font-size: 1.5rem;
+}
+
+#reading.ambiguous {
+  color: #ffc24d;
+}
+
 /* ---- capture tool (§8) ---- */
 
 #capture-bar {

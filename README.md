@@ -39,3 +39,19 @@ Workflow for threshold calibration (design §8):
 
 The JSON is your own data, collected on your own hands — the thresholds that
 make the recognizer robust come from it, not from guesses.
+
+## Live recognition (Phase 3)
+
+The main page now shows a live **Reading** line under the camera view: the
+best-scoring letter and its score, `between X and Y…` when the top two are
+too close to call, or the closest letter when nothing clears the acceptance
+gate (score ≥ 0.75 with no disqualifying error).
+
+Five letters ship for now — **A, B, C, D, L** — chosen to be visually
+distinct so they validate the whole pipeline before the rest of the
+alphabet lands. Their thresholds are provisional synthetic-scale values;
+real-hand calibration happens against capture data (§8).
+
+Hold a hand up at <http://localhost:5173> and the Reading line is the fastest
+way to sanity-check the engine: an A-hand should read `A (0.9x)`, a B-hand
+`B (0.9x)`, and deliberately sloppy shapes should read `— (closest: …)`.
