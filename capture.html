@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SignSync — capture tool</title>
+  </head>
+  <body>
+    <header>
+      <h1>SignSync <span>capture</span></h1>
+      <p id="fps"></p>
+    </header>
+
+    <main>
+      <section class="pane">
+        <div id="mirror">
+          <video id="video" playsinline muted></video>
+          <canvas id="overlay"></canvas>
+        </div>
+        <p id="status" class="error">Requesting camera…</p>
+
+        <div id="capture-bar">
+          <div id="current">
+            <span id="current-letter">A</span>
+            <span id="current-count">0/30</span>
+          </div>
+          <p id="stable-indicator" class="unstable">moving</p>
+        </div>
+
+        <div id="letter-grid" aria-label="letter to capture"></div>
+
+        <div id="capture-actions">
+          <label>
+            <input type="checkbox" id="auto-advance" checked />
+            auto-advance at target
+          </label>
+          <button id="download" type="button">Download JSON</button>
+          <button id="clear" type="button" class="danger">Clear all</button>
+          <span id="total-count"></span>
+        </div>
+
+        <p id="capture-hint">
+          Hold each handshape still — a sample records automatically ~2.5×/s
+          while your hand is steady. Aim for 30 per letter; vary lighting,
+          distance and angle between passes. <strong>J and Z:</strong> record
+          the base handshape only — their motion is handled in a later phase.
+        </p>
+
+        <details id="debug-wrap">
+          <summary>Live feature inspector</summary>
+          <div id="debug"></div>
+        </details>
+
+        <p><a href="./index.html">← back to the main app</a></p>
+      </section>
+    </main>
+
+    <script type="module" src="/src/capture.js"></script>
+  </body>
+</html>

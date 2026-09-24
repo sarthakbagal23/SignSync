@@ -40,6 +40,21 @@ h1 span {
   font-variant-numeric: tabular-nums;
 }
 
+.header-nav {
+  display: flex;
+  align-items: baseline;
+  gap: 18px;
+}
+
+.header-nav a {
+  color: var(--dim);
+  font-size: 0.85rem;
+}
+
+.header-nav a:hover {
+  color: var(--accent);
+}
+
 main {
   display: grid;
   grid-template-columns: minmax(0, 960px) 300px;
@@ -91,6 +106,151 @@ main {
 
 #status.error {
   color: var(--error);
+}
+
+/* ---- capture tool (§8) ---- */
+
+#capture-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 12px 0;
+}
+
+#current {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+#current-letter {
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--accent);
+}
+
+#current-letter.flash {
+  animation: flash 0.35s ease-out;
+}
+
+@keyframes flash {
+  from { color: #2fd66f; text-shadow: 0 0 18px #2fd66f80; }
+  to { color: var(--accent); text-shadow: none; }
+}
+
+#current-count {
+  color: var(--dim);
+  font-variant-numeric: tabular-nums;
+}
+
+#stable-indicator {
+  margin: 0;
+  font-size: 0.85rem;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid #232735;
+}
+
+#stable-indicator::before {
+  content: "● ";
+}
+
+#stable-indicator.stable {
+  color: #2fd66f;
+}
+
+#stable-indicator.unstable {
+  color: var(--dim);
+}
+
+#letter-grid {
+  display: grid;
+  grid-template-columns: repeat(13, 1fr);
+  gap: 6px;
+}
+
+@media (max-width: 700px) {
+  #letter-grid {
+    grid-template-columns: repeat(7, 1fr);
+  }
+}
+
+#letter-grid button {
+  font: inherit;
+  font-size: 0.95rem;
+  padding: 8px 0;
+  color: var(--fg);
+  background: #161922;
+  border: 1px solid #232735;
+  border-radius: 8px;
+  cursor: pointer;
+  position: relative;
+}
+
+#letter-grid button:hover {
+  border-color: var(--accent);
+}
+
+#letter-grid button.current {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #0f1115;
+  font-weight: 700;
+}
+
+#letter-grid button.done::after {
+  content: "✓";
+  position: absolute;
+  top: -6px;
+  right: -4px;
+  font-size: 0.7rem;
+  color: #2fd66f;
+}
+
+#capture-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 14px 0;
+}
+
+button {
+  font: inherit;
+  color: var(--fg);
+  background: #1c2030;
+  border: 1px solid #2a2f42;
+  border-radius: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+}
+
+button:hover {
+  border-color: var(--accent);
+}
+
+button.danger {
+  color: var(--error);
+}
+
+#total-count {
+  color: var(--dim);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+
+#capture-hint {
+  color: var(--dim);
+  font-size: 0.85rem;
+  max-width: 60ch;
+}
+
+#debug-wrap summary {
+  cursor: pointer;
+  color: var(--dim);
+  margin: 10px 0 6px;
 }
 
 /* Live feature inspector (Phase 1): dense, monospace, readable at a glance
